@@ -7,7 +7,7 @@ type InputFieldProps = {
 };
 
 const InputField: React.FC<InputFieldProps> = ({ label, type, value, onChange, error }) => (
-    <div className="mb-5 flex flex-col">
+    <div className="mb-4 flex flex-col">
         <label>{label}</label>
         <input
             type={type}

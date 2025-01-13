@@ -22,9 +22,9 @@ model Candidate {
   phoneNumber String    @map("phone_number")
   gender      Gender
   age         Int
-  address     String
+  address     String    @db.Text
   education   Education
-  experience  String
+  experience  String    @db.Text
   position    String
   resumeUrl   String?   @map("resume_url")
   created_at  DateTime  @default(now())

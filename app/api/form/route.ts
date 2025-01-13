@@ -29,20 +29,34 @@ export async function POST(req: Request) {
         if (resumeUrl) {
             data.resumeUrl = resumeUrl;
         }
-        // Remove the resume field to avoid sending an invalid object
-        delete data.resume;
+
 
         // Convert age to integer
         if (data.age) {
             data.age = parseInt(data.age, 10);
         }
 
-        // Save to the database using Prisma
-        const savedData = await prisma.candidate.create({
-            data,
+        const existingCandidate = await prisma.candidate.findUnique({
+            where: { email: data.email },
         });
 
-        return NextResponse.json({ message: "Form submitted successfully!", savedData });
+        const savedData = await prisma.candidate.upsert({
+            where: { email: data.email },
+            update: {
+                ...data,
+                updated_at: new Date(),
+            },
+            create: {
+                ...data,
+            },
+        });
+
+        const action = existingCandidate ? "edit" : "create";
+
+        return NextResponse.json({
+            message: `Form ${action === "create" ? "created" : "updated"} successfully!`,
+            savedData,
+        });
     } catch (error) {
         console.error("Error handling form submission:", error);
         return NextResponse.json({ error: "Failed to handle form submission." }, { status: 500 });

@@ -5,8 +5,7 @@ type SummaryPageProps = {
 };
 
 const SummaryPage: React.FC<SummaryPageProps> = ({ formData }) => (
-    <div>
-
+    <div className="h-[500px] overflow-y-auto">
         <ul className="mb-4">
             {Object.keys(formData).map((key) => {
                 if (key === "resume" && formData.resume) {

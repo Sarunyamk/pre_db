@@ -28,13 +28,18 @@ const Page3: React.FC<Page3Props> = ({ formData, updateFormData, getErrorMessage
                 <p className="text-red-500 text-xs">{getErrorMessage("education")}</p>
             )}
         </div>
-        <InputField
-            label="Experience"
-            type="text"
+        <label className="block text-gray-700">Work Experience</label>
+        <textarea
             value={formData.experience}
-            onChange={(value) => updateFormData({ experience: value })}
-            error={getErrorMessage("experience")}
+            rows={4}
+            onChange={(e) => updateFormData({ experience: e.target.value })}
+            className={`w-full border p-2 ${getErrorMessage("experience") ? "border-red-500" : "border-gray-300"
+                } rounded mt-2`}
         />
+        {getErrorMessage("experience") && (
+            <p className="text-red-500 text-xs">{getErrorMessage("experience")}</p>
+        )}
+
         <InputField
             label="Position"
             type="text"

@@ -11,7 +11,7 @@ const Page2: React.FC<Page2Props> = ({ formData, updateFormData, getErrorMessage
 
         <div className="mb-4">
             <label className="block text-gray-700">Gender</label>
-            <div className="flex gap-4 ">
+            <div className="flex gap-4 mt-2">
                 {["Male", "Female", "Other"].map((gender) => (
                     <label key={gender} className="inline-flex items-center">
                         <input
@@ -37,13 +37,17 @@ const Page2: React.FC<Page2Props> = ({ formData, updateFormData, getErrorMessage
             onChange={(value) => updateFormData({ age: value })}
             error={getErrorMessage("age")}
         />
-        <InputField
-            label="Address"
-            type="text"
+        <label className="block text-gray-700">Address</label>
+        <textarea
             value={formData.address}
-            onChange={(value) => updateFormData({ address: value })}
-            error={getErrorMessage("address")}
+            rows={4}
+            onChange={(e) => updateFormData({ address: e.target.value })}
+            className={`w-full border p-2 ${getErrorMessage("address") ? "border-red-500" : "border-gray-300"
+                } rounded mt-2`}
         />
+        {getErrorMessage("address") && (
+            <p className="text-red-500 text-xs">{getErrorMessage("address")}</p>
+        )}
     </div>
 );
 
