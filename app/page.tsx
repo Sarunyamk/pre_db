@@ -61,7 +61,7 @@ export default function HomePage() {
     }
 
     if (step === 2) {
-      if (!formData.gender || !["male", "female", "other"].includes(formData.gender)) {
+      if (!formData.gender || !["Male", "Female", "Other"].includes(formData.gender)) {
         currentErrors.push({ field: "gender", message: "Gender is required and must be valid." });
       }
       if (!formData.age || formData.age <= 0) {
@@ -116,21 +116,31 @@ export default function HomePage() {
   const submitFormData = async () => {
     try {
       const form = new FormData();
+
+      // Append all fields to FormData
       Object.keys(formData).forEach((key) => {
-        form.append(key, formData[key as keyof FormDataType] as any);
+        form.append(
+          key,
+          key === "age" ? String(formData[key as keyof FormDataType]) : (formData[key as keyof FormDataType] as any)
+        );
       });
 
-      const response = await axios.post("/api/form", form);
+      const response = await axios.post("/api/form", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       alert(response.data.message || "Form submitted successfully!");
-      resetForm(); // Reset the form
+      resetForm();
     } catch (error: any) {
+      console.error("Error submitting form:", error);
       if (error.response?.data?.error) {
-        setErrors(error.response.data.error); // Save API errors
+        setErrors(error.response.data.error);
       } else {
         alert("Something went wrong while submitting the form.");
       }
     }
   };
+
 
   const resetForm = () => {
     setFormData({
@@ -191,7 +201,7 @@ export default function HomePage() {
             )}
             {step === 4 ? (
               <button
-                onClick={() => setIsSummary(true)}
+                onClick={submitFormData}
                 className="bg-green-500 text-white px-4 py-2 rounded"
               >
                 Submit
@@ -210,3 +220,4 @@ export default function HomePage() {
     </div>
   );
 }
+

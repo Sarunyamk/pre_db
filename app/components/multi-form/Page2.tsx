@@ -17,9 +17,9 @@ const Page2: React.FC<Page2Props> = ({ formData, updateFormData, getErrorMessage
                 className={`w-full border ${getErrorMessage("gender") ? "border-red-500" : "border-gray-300"} rounded mt-2`}
             >
                 <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
             </select>
             {getErrorMessage("gender") && (
                 <p className="text-red-500 text-sm mt-1">{getErrorMessage("gender")}</p>

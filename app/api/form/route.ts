@@ -1,35 +1,40 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import path from "path";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const formData = await req.formData();
-        const file = formData.get("file") as Blob | null;
-        const data = Object.fromEntries(formData);
+        const contentType = req.headers.get("content-type");
+        let data;
 
-        if (file) {
-            const fileName = `${uuidv4()}-${file.name}`;
-            const filePath = path.join(process.cwd(), "public/uploads", fileName);
-            const buffer = Buffer.from(await file.arrayBuffer());
-            fs.writeFileSync(filePath, buffer);
-            data.resumeUrl = `/uploads/${fileName}`;
+        if (contentType?.includes("application/json")) {
+            // Parse JSON body
+            data = await req.json();
+        } else if (contentType?.includes("multipart/form-data")) {
+            // Parse FormData
+            const formData = await req.formData();
+            data = Object.fromEntries(formData.entries()); // Convert FormData to an object
+        } else {
+            return NextResponse.json({ error: "Unsupported Content-Type" }, { status: 400 });
         }
 
+        // Convert age to integer if present
+        if (data.age) {
+            data.age = parseInt(data.age as string, 10);
+        }
+
+        console.log("Parsed Data:", data);
+
+        // Create candidate in Prisma
         const form = await prisma.candidate.create({
-            data: {
-                ...data,
-                age: parseInt(data.age as string, 10),
-            },
+            data,
         });
 
         return NextResponse.json({ message: "Form submitted successfully!", form });
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error("Error occurred:", error);
         return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
     }
 }
+
