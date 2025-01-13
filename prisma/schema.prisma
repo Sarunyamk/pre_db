@@ -9,6 +9,46 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Candidate {
+  id          Int       @id @default(autoincrement())
+  prefix      Prefix
+  firstName   String    @map("first_name")
+  lastName    String    @map("last_name")
+  email       String    @unique
+  phoneNumber String    @map("phone_number")
+  gender      Gender
+  age         Int
+  address     String
+  education   Education
+  experience  String
+  position    String
+  resumeUrl   String    @map("resume_url")
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+}
+
+enum Prefix {
+  Mr
+  Ms
+  Mrs
+  Other
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum Education {
+  HighSchool
+  Diploma
+  Bachelor
+  Master
+  Doctorate
+  Other
 }
