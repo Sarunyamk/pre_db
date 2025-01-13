@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 import Page1 from "./components/multi-form/Page1";
 import Page2 from "./components/multi-form/Page2";
@@ -108,36 +109,27 @@ export default function HomePage() {
   const updateFormData = (newData: Partial<FormDataType>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
-
-  const backToEdit = () => {
-    setIsSummary(false);
-  };
-
   const submitFormData = async () => {
     try {
       const form = new FormData();
-
-      // Append all fields to FormData
       Object.keys(formData).forEach((key) => {
-        form.append(
-          key,
-          key === "age" ? String(formData[key as keyof FormDataType]) : (formData[key as keyof FormDataType] as any)
-        );
+        const value = formData[key as keyof FormDataType];
+        if (value instanceof File) {
+          form.append(key, value);
+        } else {
+          form.append(key, String(value));
+        }
       });
 
       const response = await axios.post("/api/form", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert(response.data.message || "Form submitted successfully!");
+      toast.success("Success Message!");
       resetForm();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting form:", error);
-      if (error.response?.data?.error) {
-        setErrors(error.response.data.error);
-      } else {
-        alert("Something went wrong while submitting the form.");
-      }
+      toast.error("Error submitting form!");
     }
   };
 
@@ -175,7 +167,10 @@ export default function HomePage() {
       case 2:
         return <Page2 formData={formData} updateFormData={updateFormData} getErrorMessage={getErrorMessage} />;
       case 3:
-        return <Page3 formData={formData} updateFormData={updateFormData} getErrorMessage={getErrorMessage} />;
+        return <Page3 formData={formData} updateFormData={updateFormData} getErrorMessage={getErrorMessage} />
+
+
+
       default:
         return null;
     }
@@ -186,18 +181,20 @@ export default function HomePage() {
     <div className="min-h-screen flex items-center justify-center p-6 text-black">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-xl">
         <h1 className="text-2xl font-bold mb-4 text-center">
-          {isSummary ? "Summary Form" : "Multistep Form"}
+          {isSummary ? "Review Form" : "Multistep Form"}
         </h1>
         {renderStep()}
         {!isSummary && (
           <div className="flex justify-between mt-4">
-            {step > 1 && (
+            {step && (
               <button
                 onClick={handlePreviousStep}
-                className="px-4 py-2 rounded text-white bg-blue-500"
+                disabled={step === 1} // ปิดการใช้งานเมื่อเป็นหน้าแรก
+                className={`px-4 py-2 rounded text-white ${step === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500"}`}
               >
                 Previous
               </button>
+
             )}
             {step === 4 ? (
               <button

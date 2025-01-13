@@ -13,7 +13,7 @@ const Page1: React.FC<Page1Props> = ({ formData, updateFormData, getErrorMessage
             <select
                 value={formData.prefix}
                 onChange={(e) => updateFormData({ prefix: e.target.value })}
-                className={`w-full border ${getErrorMessage("prefix") ? "border-red-500" : "border-gray-300"} rounded mt-2`}
+                className={`w-full border p-2 ${getErrorMessage("prefix") ? "border-red-500" : "border-gray-300"} rounded mt-2`}
             >
                 <option value="">Select Prefix</option>
                 <option value="Mr">Mr.</option>
@@ -22,7 +22,7 @@ const Page1: React.FC<Page1Props> = ({ formData, updateFormData, getErrorMessage
                 <option value="Other">Other</option>
             </select>
             {getErrorMessage("prefix") && (
-                <p className="text-red-500 text-sm mt-1">{getErrorMessage("prefix")}</p>
+                <p className="text-red-500 text-xs ">{getErrorMessage("prefix")}</p>
             )}
         </div>
         <InputField

@@ -13,7 +13,8 @@ const Page3: React.FC<Page3Props> = ({ formData, updateFormData, getErrorMessage
             <select
                 value={formData.education}
                 onChange={(e) => updateFormData({ education: e.target.value })}
-                className={`w-full border ${getErrorMessage("education") ? "border-red-500" : "border-gray-300"} rounded mt-2`}
+                className={`w-full border p-2 ${getErrorMessage("education") ? "border-red-500" : "border-gray-300"
+                    } rounded mt-2`}
             >
                 <option value="">Select Education</option>
                 <option value="HighSchool">High School</option>
@@ -24,7 +25,7 @@ const Page3: React.FC<Page3Props> = ({ formData, updateFormData, getErrorMessage
                 <option value="Other">Other</option>
             </select>
             {getErrorMessage("education") && (
-                <p className="text-red-500 text-sm mt-1">{getErrorMessage("education")}</p>
+                <p className="text-red-500 text-xs">{getErrorMessage("education")}</p>
             )}
         </div>
         <InputField
@@ -41,6 +42,16 @@ const Page3: React.FC<Page3Props> = ({ formData, updateFormData, getErrorMessage
             onChange={(value) => updateFormData({ position: value })}
             error={getErrorMessage("position")}
         />
+        <div className="mt-4">
+            <label className="block text-gray-700">Upload Resume</label>
+            <input
+                type="file"
+                onChange={(e) =>
+                    updateFormData({ resume: e.target.files ? e.target.files[0] : null })
+                }
+                className="w-full border p-2 border-gray-300 rounded mt-2"
+            />
+        </div>
     </div>
 );
 

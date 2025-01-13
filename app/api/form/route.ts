@@ -1,40 +1,50 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const contentType = req.headers.get("content-type");
-        let data;
+        const formData = await req.formData();
+        const data: any = {};
+        let resumeUrl: string | null = null;
 
-        if (contentType?.includes("application/json")) {
-            // Parse JSON body
-            data = await req.json();
-        } else if (contentType?.includes("multipart/form-data")) {
-            // Parse FormData
-            const formData = await req.formData();
-            data = Object.fromEntries(formData.entries()); // Convert FormData to an object
-        } else {
-            return NextResponse.json({ error: "Unsupported Content-Type" }, { status: 400 });
+        // Process FormData
+        for (const [key, value] of formData.entries()) {
+            if (key === "resume" && value instanceof File) {
+                // Handle file upload
+                const fileName = `${uuidv4()}-${value.name}`;
+                const filePath = path.join(process.cwd(), "public/uploads", fileName);
+                fs.writeFileSync(filePath, Buffer.from(await value.arrayBuffer()));
+                resumeUrl = `${fileName}`;
+            } else {
+                data[key] = value;
+            }
         }
 
-        // Convert age to integer if present
+        // Ensure only the resumeUrl is saved
+        if (resumeUrl) {
+            data.resumeUrl = resumeUrl;
+        }
+        // Remove the resume field to avoid sending an invalid object
+        delete data.resume;
+
+        // Convert age to integer
         if (data.age) {
-            data.age = parseInt(data.age as string, 10);
+            data.age = parseInt(data.age, 10);
         }
 
-        console.log("Parsed Data:", data);
-
-        // Create candidate in Prisma
-        const form = await prisma.candidate.create({
+        // Save to the database using Prisma
+        const savedData = await prisma.candidate.create({
             data,
         });
 
-        return NextResponse.json({ message: "Form submitted successfully!", form });
+        return NextResponse.json({ message: "Form submitted successfully!", savedData });
     } catch (error) {
-        console.error("Error occurred:", error);
-        return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+        console.error("Error handling form submission:", error);
+        return NextResponse.json({ error: "Failed to handle form submission." }, { status: 500 });
     }
 }
-

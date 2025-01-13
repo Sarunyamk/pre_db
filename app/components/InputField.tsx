@@ -7,15 +7,15 @@ type InputFieldProps = {
 };
 
 const InputField: React.FC<InputFieldProps> = ({ label, type, value, onChange, error }) => (
-    <div className="mb-4">
+    <div className="mb-5 flex flex-col">
         <label>{label}</label>
         <input
             type={type}
             value={value || ""}
             onChange={(e) => onChange(type === "file" ? e.target.files[0] : e.target.value)}
-            className={`border ${error ? "border-red-500" : "border-gray-300"} rounded mt-2`}
+            className={`border p-2 ${error ? "border-red-500 " : "border-gray-300"} rounded mt-2`}
         />
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
 );
 

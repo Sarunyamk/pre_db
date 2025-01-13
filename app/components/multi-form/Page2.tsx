@@ -11,18 +11,23 @@ const Page2: React.FC<Page2Props> = ({ formData, updateFormData, getErrorMessage
 
         <div className="mb-4">
             <label className="block text-gray-700">Gender</label>
-            <select
-                value={formData.gender}
-                onChange={(e) => updateFormData({ gender: e.target.value })}
-                className={`w-full border ${getErrorMessage("gender") ? "border-red-500" : "border-gray-300"} rounded mt-2`}
-            >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
+            <div className="flex gap-4 ">
+                {["Male", "Female", "Other"].map((gender) => (
+                    <label key={gender} className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="gender"
+                            value={gender}
+                            checked={formData.gender === gender}
+                            onChange={(e) => updateFormData({ gender: e.target.value })}
+                            className="form-radio h-4 w-4 text-blue-600"
+                        />
+                        <span className="ml-2">{gender}</span>
+                    </label>
+                ))}
+            </div>
             {getErrorMessage("gender") && (
-                <p className="text-red-500 text-sm mt-1">{getErrorMessage("gender")}</p>
+                <p className="text-red-500 text-xs">{getErrorMessage("gender")}</p>
             )}
         </div>
         <InputField
